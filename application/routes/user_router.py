@@ -15,6 +15,10 @@ router = APIRouter(
     tags=["User"],
     prefix='/user'
 )
+def handle_code_gen(email):
+    randstring = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(9))
+    Confirm.create({"user_email": email, "Code": randstring, "expire_at" : datetime.datetime.now() + datetime.timedelta(hours = 1)})
+    return randstring
 
 @router.post('/create', responses={400: {"model": Message, "description": "Bad Request"}})
 def create_user(user_request: ApiUser):
@@ -22,8 +26,9 @@ def create_user(user_request: ApiUser):
     if not user_exists:
         new_user = User(user_request.user_name, user_request.user_email, user_request.user_password)
         transaction = Users.create(new_user.orm())
+        rand = handle_code_gen(user_request.user_email)
         if transaction == 0:
-            r = requests.post('http://localhost:8001/sendmail', json.dumps({"addrs": user_request.user_email, "code": handle_code_gen(user_request.user_email)}))
+            requests.post('http://localhost:8001/sendmail', json.dumps({"addrs": user_request.user_email, "code": rand}))
             return JSONResponse(status_code=201)
     else:
         return JSONResponse(status_code=400, content={"Message": "This user alredy exists"})
@@ -67,31 +72,38 @@ def delete_user(email):
     else:
         return JSONResponse(status_code = 404, content={"Message": "User not found"})
 
-def handle_code_gen(email):
-    randstring = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(9))
-    Confirm.create({"user_email": email, "Code": randstring, "expire_at" : datetime.datetime.now() + datetime.timedelta(hours = 1)})
-    return randstring
-@router.get('/{email}/confirm')
+@router.get('/{email}/confirm', responses={
+    404: {"model": Message, "description": "Resource not found"}, 
+    500: {"model": Message, "description": "Internal Server error"}
+})
 def request_confirm(email):
-    code = Confirm.read({"user_email": email}, {'_id': 0})
-    if code:
-        return "You alredy has a code, plese check your mail box (spam included)"
+    usr = Users.read({"user_email": email}, {'_id': 0})
+    if usr:
+        if usr['verified'] == False:
+            code = Confirm.read({"user_email": email}, {'_id': 0})
+            if code:
+                return JSONResponse(status_code=200, content={"Message": "You already has a code"})
+            else:
+                handle_code_gen(email)
+                return JSONResponse(status_code=201, content={"Message": "Code generated"})
+        else:
+            return JSONResponse(status_code=200, content={"Message": "You already are verified"})
     else:
-        handle_code_gen(email)
-        return 'Code generated'
+        return JSONResponse(status_code=404, content={"Message": "User not found"})
         
     
-@router.post('/{email}/confirm')
+@router.post('/{email}/confirm', responses={
+    404: {"model": Message, "description": "Resource not found"}, 
+    500: {"model": Message, "description": "Internal Server error"}
+})
 async def confirm_user(email, user_input: UserConfirm):
     code = Confirm.read({"user_email": email}, {'_id': 0})
     if code:
         if user_input.randstring == code['Code']:
             Users.update({"user_email": email}, {"verified": True})
             Confirm.delete({"user_email": email})           
-            return "Confirmed"
+            return JSONResponse(status_code=200)
         else:
-            return "Wrong code"
+            return JSONResponse(status_code=400)
     else:
-        return 'Request a code at this endpoint get method'
-
-    
+        return JSONResponse(status_code=404, content={"Message": "There's no code for this user"})    

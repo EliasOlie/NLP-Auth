@@ -1,11 +1,13 @@
 from fastapi.testclient import TestClient
 import json
+from application.infra.DB.database import Confirm
 from app import app
 
 """
 TODO:
 • Confirmar email automaticamente
 • Fail tests
+• Todos os cases do flow de confirmação
 """
 
 client = TestClient(app)
@@ -19,6 +21,21 @@ def test_create_user():
     r = client.post('/user/create', json.dumps(payload))
     assert r.status_code == 201
     
+def test_user_code_generated():
+    code = Confirm.read({'user_email': "test@test.com"})
+    if code['Code']:
+        assert True
+    else:
+        assert False
+        
+def confirm_user():
+    code = Confirm.read({'user_email': "test@test.com"})
+    if code['Code']:
+        payload = json.dumps({"randstring": code['Code']})
+        r = client.post(f'/user/test@test.com/confirm', payload)
+        usr = client.get('/user/test@test.com')
+        assert r.status_code == 200 and usr['verified'] == True
+        
 def test_create_user_fail():
     payload = {
         "user_name": "TestUssr",
