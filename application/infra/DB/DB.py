@@ -34,7 +34,7 @@ class DB:
         return data
 
     def update(self, selector: dict, data: dict) -> int:
-        change = self.collection.update_one(selector, {"$set": data})
+        change = self.collection.update_one(selector, data)
         return change.modified_count
 
     def delete(self, selector: dict) -> int:
@@ -42,5 +42,5 @@ class DB:
         return deletion.deleted_count
 
 if __name__ == '__main__':
-    test = DB("NLP-Users", "NU")
-    test.isalive()
+    test = DB("NLP-Users", "Apis")
+    test.create({"a":"b"})

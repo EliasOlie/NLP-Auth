@@ -17,6 +17,7 @@ class User(Preprocess):
         
         self.verified = False
         self.is_active = True
+        self.api_key = []
         
         fuso_horario = timezone(timedelta(hours=-3))
         date = datetime.now().astimezone(fuso_horario).strftime('%Y/%m/%d')

@@ -1,3 +1,4 @@
+from base64 import encode
 import bcrypt
 
 def encrypt(password:str):
@@ -5,10 +6,9 @@ def encrypt(password:str):
     hashed_password = bcrypt.hashpw(password, bcrypt.gensalt())
     return hashed_password
 
-def compare_digest(password:str):
-    tr = input("PSW: ")
-    tr = tr.encode('utf-8')
-    if bcrypt.checkpw(tr, password):
-        print('SUCESS')
-    else:
-        print('Fail')
+def compare_digest(user_input ,password):
+    return bcrypt.checkpw(user_input.encode('utf-8'), password.encode('utf-8'))
+       
+if __name__ == '__main__':
+    osw = "$2b$12$zLFrUBuzNQwqtTxxF.PkyubYcSoXFSP1VUuPffb5904anpP5mbrnC"
+    print(compare_digest("c", osw))
