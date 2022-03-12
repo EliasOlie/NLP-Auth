@@ -20,6 +20,10 @@ jobs:
           python -m pip install pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Test with pytest
+      - env:
+        ENV : ${{secrets.ENV}}
+        MONGO_PASS: ${{secrets.MONGO_PASS}}
+        MONGO_USR: ${{secrets.MONGO_USR}}
         run: pytest -v
   deploy-prod:
     runs-on: ubuntu-latest
