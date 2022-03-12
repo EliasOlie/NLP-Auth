@@ -26,7 +26,7 @@ try:
     ENV = os.environ["ENV"]
 except KeyError:
     ENV = config("ENV")
-    PSW = config('SecureKey')
+    PSW = config('SECURE_KEY')
 
 router = APIRouter(
     tags=["User"],
