@@ -6,8 +6,8 @@ from application.infra.DB.DB import DB as Connection
 
 app = FastAPI()
 
-app.include_router(user_router.router)
 app.include_router(auth_router.router)
+app.include_router(user_router.router)
 
 #CORS Policy
 origins = [
@@ -23,4 +23,4 @@ app.add_middleware(
 
 @app.get('/')
 def index():
-    return {"Hello from:" : "FastAPI backend!"}
+    return {"Message" : "This is just an API, see /docs for reference and testing"}

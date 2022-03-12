@@ -15,9 +15,8 @@ from application.infra.DB.database import Users, Confirm
 """
 TODO
 
-Configurar variaveis por ambiente dev/prod
-Link que confirme o usuário com o código como parametro de rota
-Mongo sem destruir registros com o tempo correto
+Configurar variaveis por ambiente dev/prod +/-
+Link que confirme o usuário com o código como parametro de rota ✔
 """
 
 ENV = config("ENV")
@@ -27,6 +26,7 @@ router = APIRouter(
     tags=["User"],
     prefix='/user'
 )
+
 def handle_code_gen(email):
     randstring = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(9))
     Confirm.create({"user_email": email, "Code": randstring, "created_at" : datetime.datetime.now() + datetime.timedelta(hours = 2)})
@@ -137,6 +137,20 @@ async def confirm_user(email, user_input: UserConfirm):
     else:
         return JSONResponse(status_code=404, content={"Message": "There's no code for this user"})
     
+@router.get('/{email}/confirm/{code}')
+def confirm_user_route(email, code):
+    code_exists = Confirm.read({"user_email": email}, {"_id": 0})
+    if code_exists:
+        if code == code_exists['Code'] and Users.read({"user_email": email}, {"_id": 0})['verified'] == False:
+            Users.update({"user_email": email}, {"$set": {"verified": True}})
+            Confirm.delete({"user_email": email})
+            return JSONResponse(status_code=200)
+        else:
+            return JSONResponse(status_code=403)
+    else:
+        return JSONResponse(status_code=400, content={"Message": "There's no code for this user"})
+        
+
 @router.get('/apiv0')
 def get_api_key(user: RespUser = Depends(auth_handler.auth_wrapper)):
     user = Users.read({'user_email': user['user_email']}, {"_id": 0})
