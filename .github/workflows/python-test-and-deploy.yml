@@ -23,6 +23,7 @@ jobs:
       
         env:
           ENV : ${{secrets.ENV}}
+          SECURE_KEY: ${{secretes.SECURE_KEY}}
           MONGO_PASS: ${{secrets.MONGO_PASS}}
           MONGO_USR: ${{secrets.MONGO_USR}}
       

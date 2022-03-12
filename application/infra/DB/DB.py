@@ -2,10 +2,10 @@ import os
 import pymongo
 from decouple import config
 
-if os.environ['ENV']:
+try:
     PSW = os.environ["MONGO_PASS"]
     USR = os.environ["MONGO_USR"]
-else:
+except KeyError:
     PSW = config("MONGO_PASS")
     USR = config("MONGO_USR")
 

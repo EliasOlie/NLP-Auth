@@ -1,5 +1,6 @@
 import string
 import requests
+import os
 import random
 import json
 import datetime
@@ -19,8 +20,13 @@ Configurar variaveis por ambiente dev/prod +/-
 Link que confirme o usuário com o código como parametro de rota ✔
 """
 
-ENV = config("ENV")
-PSW = config('SecureKey')
+
+try:
+    PSW = os.environ["SECURE_KEY"]
+    ENV = os.environ["ENV"]
+except KeyError:
+    ENV = config("ENV")
+    PSW = config('SecureKey')
 
 router = APIRouter(
     tags=["User"],
