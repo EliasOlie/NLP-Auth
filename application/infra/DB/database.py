@@ -1,7 +1,7 @@
 import datetime
 try:
     from .DB import DB
-except:
+except (ModuleNotFoundError, ImportError):
     from DB import DB
 #Users collection
 Users = DB("NLP-Users", "NU")
