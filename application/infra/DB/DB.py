@@ -2,9 +2,9 @@ import os
 import pymongo
 from decouple import config
 
-if os.getenv('ENV'):
-    PSW = os.getenv("MONGO_PASS")
-    USR = os.getenv("MONGO_USR")
+if os.environ['ENV']:
+    PSW = os.environ["MONGO_PASS"]
+    USR = os.environ["MONGO_USR"]
 else:
     PSW = config("MONGO_PASS")
     USR = config("MONGO_USR")
