@@ -24,7 +24,7 @@ jobs:
         ENV : ${{secrets.ENV}}
         MONGO_PASS: ${{secrets.MONGO_PASS}}
         MONGO_USR: ${{secrets.MONGO_USR}}
-        run: pytest -v
+      run: pytest -v
   deploy-prod:
     runs-on: ubuntu-latest
     name: Deploy container
