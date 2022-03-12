@@ -2,7 +2,7 @@ import os
 import pymongo
 from decouple import config
 
-if os.getenv('ENV') == 'prod':
+if os.getenv('ENV'):
     PSW = os.getenv("MONGO_PASS")
     USR = os.getenv("MONGO_USR")
 else:
