@@ -22,7 +22,8 @@ jobs:
       - name: Test with pytest
       
         env:
-          ENV : ${{secrets.ENV}}
+          ENV: ${{secrets.ENV}}
+          JWT_SECRET: ${{secrets.JWT_SECRET}}
           SECURE_KEY: ${{secrets.SECURE_KEY}}
           MONGO_PASS: ${{secrets.MONGO_PASS}}
           MONGO_USR: ${{secrets.MONGO_USR}}
