@@ -16,7 +16,7 @@ import jwt
 
 if os.getenv("ENV"):
     ENV = os.getenv("ENV")
-    JWT_SECRET = os.getenv("TOKEN_SECRET")
+    JWT_SECRET = os.getenv("JWT_SECRET")
 else:
     ENV = config("ENV")
     JWT_SECRET = config("JWT_SECRET")
