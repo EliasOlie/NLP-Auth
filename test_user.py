@@ -31,7 +31,7 @@ def test_user_code_generated():
     else:
         assert False
         
-def test_confirm_user(token):
+def test_confirm_user(token): #<- Error Github (TypeError expected string value)
     code = Confirm.read({'user_email': "test@test.com"})
     if code['Code']:
         payload = json.dumps({"randstring": code['Code']})
@@ -48,16 +48,8 @@ def test_create_user_fail():
     r = client.post('/user/create', json.dumps(payload))
     assert r.status_code == 400
 
-@pytest.fixture
-def token():
-    payload = json.dumps({
-        "useremail": "test@test.com",
-        "password": "123"
-    })
-    c = client.post('/security/login', payload)
-    return c.json()['token']
 
-def test_login_user():
+def test_login_user(): #<- Failed Github (TypeError expected string value)
     payload = json.dumps({
         "useremail": "test@test.com",
         "password": "123"
@@ -66,7 +58,7 @@ def test_login_user():
     assert c.status_code == 200
     return c.json()['token']
     
-def test_read_user(token):
+def test_read_user(token): #<- Error Github (TypeError expected string value)
     r = client.get(f'/user', headers= {"Authorization": f"Bearer {token}"})
     attrs = r.json()
     attrs_list = ['user_name', 'user_email', 'created_at', 'api_key', 'is_active', 'verified']
@@ -85,7 +77,7 @@ def test_read_user_fail():
     
     assert r.status_code == 403
 
-def test_update_user(token):
+def test_update_user(token): #<- Error Github (TypeError expected string value)
     payload = json.dumps({
         "field": "user_name",
         "value": "TestUser"
@@ -108,7 +100,7 @@ def test_update_user_fail():
     
     assert r.status_code == 403
     
-def test_delete_user(token):
+def test_delete_user(token): #<- Error Github (TypeError expected string value)
     r = client.get("/user/delete", headers={"Authorization": f"Bearer {token}"})
     assert r.status_code == 201
 
