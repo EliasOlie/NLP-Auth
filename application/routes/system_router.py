@@ -10,11 +10,9 @@ from application.routes.auth_router import auth_handler
 
 try:
     PSW = os.environ["INTERNAL_PASSWORD"]
-    ENV = os.environ["ENV"]
     CORE_URL = os.environ["CORE_API"]
 except KeyError:
     ENV = config("ENV")
-    PSW = config('INTERNAL_PASSWORD')
     CORE_URL = config("CORE_API")
 
 router = APIRouter(
