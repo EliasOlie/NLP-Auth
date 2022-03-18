@@ -1,0 +1,4 @@
+# Todo:
+
+* Tests
+* Better naming

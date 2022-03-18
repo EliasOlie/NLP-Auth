@@ -17,13 +17,15 @@ class User(Preprocess):
         
         self.verified = False
         self.is_active = True
-        self.api_key = []
+        self.api_key: str = None
+        self.daily_calls = 1000 if self.tier == 'Free' else 'unlimited'
         
         fuso_horario = timezone(timedelta(hours=-3))
         date = datetime.now().astimezone(fuso_horario).strftime('%Y/%m/%d')
         
         self.created_at = date
         self.modified_at = date
+        
         
 if __name__ == '__main__':
     u1 = User('Elias', 'Elias@a.com', '123')

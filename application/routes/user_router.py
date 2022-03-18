@@ -157,7 +157,7 @@ def confirm_user_route(email, code):
         return JSONResponse(status_code=400, content={"Message": "There's no code for this user"})
         
 
-@router.get('/apiv0')
+@router.get('/keys')
 def get_api_key(user: RespUser = Depends(auth_handler.auth_wrapper)):
     user = Users.read({'user_email': user['user_email']}, {"_id": 0})
     if user:
@@ -165,10 +165,10 @@ def get_api_key(user: RespUser = Depends(auth_handler.auth_wrapper)):
         if not api:   
             if Users.read({'user_email': user['user_email']}):
                 randstring = ''.join(random.SystemRandom().choice(string.ascii_uppercase + string.digits) for _ in range(24))+user['user_email']
-                transaction = Users.update({"user_email": user['user_email']}, {"$push":{"api_key": randstring}})
+                transaction = Users.update({"user_email": user['user_email']}, {"$set":{"api_key": randstring}})
                 if transaction == 0:
                     return JSONResponse(status_code=201, content={"Message": randstring})
         else:
-            return JSONResponse(status_code=200, content={"Message": api[0]})
+            return JSONResponse(status_code=200, content={"Message": api})
     else:
         return JSONResponse(status_code=404, content={"Message": "User not found"})

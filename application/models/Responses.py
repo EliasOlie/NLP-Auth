@@ -5,7 +5,8 @@ class User(BaseModel):
     user_name: str
     user_email: str
     created_at: str
-    api_key: list[str]
+    daily_calls: int
+    api_key: str|None
     is_active: bool
     verified: bool
     
