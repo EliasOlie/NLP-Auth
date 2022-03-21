@@ -61,7 +61,7 @@ def test_login_user(): #<- Failed Github (TypeError expected string value)
 def test_read_user(token): #<- Error Github (TypeError expected string value)
     r = client.get(f'/user', headers= {"Authorization": f"Bearer {token}"})
     attrs = r.json()
-    attrs_list = ['user_name', 'user_email', 'created_at', 'api_key', 'is_active', 'verified']
+    attrs_list = ['user_name', 'user_email', 'created_at', 'daily_calls', 'api_key', 'is_active', 'verified']
     control = 0
     for key in attrs.keys():
         if key in attrs_list:
