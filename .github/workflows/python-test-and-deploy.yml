@@ -23,6 +23,7 @@ jobs:
       
         env:
           ENV: ${{secrets.ENV}}
+          CORE_API: ${{secrets.CORE_API}}
           JWT_SECRET: ${{secrets.JWT_SECRET}}
           SECURE_KEY: ${{secrets.SECURE_KEY}}
           MONGO_PASS: ${{secrets.MONGO_PASS}}
