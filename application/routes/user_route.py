@@ -38,7 +38,7 @@ def handle_code_gen(email):
     Confirm.create({"user_email": email, "Code": randstring, "created_at" : datetime.datetime.now() + datetime.timedelta(hours = 2)})
     return randstring
 
-@router.post('/create', responses={400: {"model": Message, "description": "Bad Request"}})
+@user_router.post('/create', responses={400: {"model": Message, "description": "Bad Request"}})
 def create_user(user_request: ApiUser):
     user_exists = Users.read({"user_email":user_request.user_email})
     if not user_exists:
@@ -62,7 +62,7 @@ def create_user(user_request: ApiUser):
         return JSONResponse(status_code=400, content={"Message": "This user alredy exists"})
     return user_exists 
 
-@router.get('/', response_model=RespUser, responses={404: {"model": Message, "description": "Resource not found"}})
+@user_router.get('/', response_model=RespUser, responses={404: {"model": Message, "description": "Resource not found"}})
 def read_user(user:RespUser = Depends(auth_handler.auth_wrapper)):
     if type(user) == JSONResponse:
         return user
@@ -72,7 +72,7 @@ def read_user(user:RespUser = Depends(auth_handler.auth_wrapper)):
     else:
         return JSONResponse(status_code=404, content={"Message": "User not found"})
 
-@router.put('/edit', responses={
+@user_router.put('/edit', responses={
     404: {"model": Message, "description": "Resource not found"}, 
     500: {"model": Message, "description": "Internal Server error"}
 })
@@ -87,7 +87,7 @@ def update_user(u: UserChange, user: RespUser = Depends(auth_handler.auth_wrappe
     else:
         return JSONResponse(status_code = 404, content={"Message": "User not found"})
 
-@router.get('/delete', responses={
+@user_router.get('/delete', responses={
     404: {"model": Message, "description": "Resource not found"}, 
     500: {"model": Message, "description": "Internal Server error"}
 })
@@ -102,7 +102,7 @@ def delete_user(user: RespUser = Depends(auth_handler.auth_wrapper)):
     else:
         return JSONResponse(status_code = 404, content={"Message": "User not found"})
 
-@router.get('/{email}/confirm', responses={
+@user_router.get('/{email}/confirm', responses={
     404: {"model": Message, "description": "Resource not found"}, 
     500: {"model": Message, "description": "Internal Server error"}
 })
@@ -127,7 +127,7 @@ def request_confirm(email):
         return JSONResponse(status_code=404, content={"Message": "User not found"})
         
     
-@router.post('/{email}/confirm', responses={
+@user_router.post('/{email}/confirm', responses={
     404: {"model": Message, "description": "Resource not found"}, 
     500: {"model": Message, "description": "Internal Server error"}
 })
@@ -143,7 +143,7 @@ async def confirm_user(email, user_input: UserConfirm):
     else:
         return JSONResponse(status_code=404, content={"Message": "There's no code for this user"})
     
-@router.get('/{email}/confirm/{code}')
+@user_router.get('/{email}/confirm/{code}')
 def confirm_user_route(email, code):
     code_exists = Confirm.read({"user_email": email}, {"_id": 0})
     if code_exists:
@@ -157,7 +157,7 @@ def confirm_user_route(email, code):
         return JSONResponse(status_code=400, content={"Message": "There's no code for this user"})
         
 
-@router.get('/keys')
+@user_router.get('/keys')
 def get_api_key(user: RespUser = Depends(auth_handler.auth_wrapper)):
     user = Users.read({'user_email': user['user_email']}, {"_id": 0})
     if user:
@@ -188,7 +188,7 @@ def restore_user_limits(payload):
     else:
         return False
 
-@router.post('/proceed')
+@user_router.post('/proceed')
 def check_daily_calls(user: RespUser = Depends(auth_handler.auth_wrapper)):
     this_user = Users.read({"user_email": user["user_email"]}, {"_id": 0})    
     if int(this_user['daily_calls']) >= 1:

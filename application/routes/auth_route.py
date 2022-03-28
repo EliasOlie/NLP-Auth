@@ -66,7 +66,7 @@ class AuthHandler:
 
 auth_handler = AuthHandler()
     
-@router.post("/login")
+@auth_router.post("/login")
 def login(u: Auth):
     transaction = Users.read({"user_email": u.useremail}, {"_id": 0})
     if not transaction:
