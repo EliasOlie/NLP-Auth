@@ -1,14 +1,12 @@
 from fastapi import FastAPI
-from application.routes import user_router
-from application.routes import auth_router
-from application.routes import system_router
+from application.routes.auth_route import auth_router
+from application.routes.user_route import user_router
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-app.include_router(auth_router.router)
-app.include_router(user_router.router)
-app.include_router(system_router.router)
+app.include_router(auth_router)
+app.include_router(user_router)
 
 #CORS Policy
 origins = [

@@ -8,7 +8,7 @@ from decouple import config
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from application.models.ApiUser import ApiUser, UserChange, UserConfirm
-from application.routes.auth_router import auth_handler
+from application.routes.auth_route import auth_handler
 from application.models.Responses import User as RespUser
 from application.models.Responses import Message
 from application.models.User import User
@@ -28,7 +28,7 @@ except KeyError:
     ENV = config("ENV")
     PSW = config('SECURE_KEY')
 
-router = APIRouter(
+user_router = APIRouter(
     tags=["User"],
     prefix='/user'
 )
@@ -172,3 +172,33 @@ def get_api_key(user: RespUser = Depends(auth_handler.auth_wrapper)):
             return JSONResponse(status_code=200, content={"Message": api})
     else:
         return JSONResponse(status_code=404, content={"Message": "User not found"})
+
+def handle_user_calls(api_key):
+    user = Users.read({"api_key": api_key}, {"_id": 0})
+    transaction = Users.update({"user_email": user['user_email']}, {"$set": {"daily_calls": str(int(user['daily_calls'])-1)}})
+    if transaction >= 1:
+        return True
+    else:
+        return False
+    
+def restore_user_limits(payload):
+    transaction = Users.update({"api_key": payload}, {"$set":{"daily_calls": 1000}})
+    if transaction >= 1:
+        return True
+    else:
+        return False
+
+@router.post('/proceed')
+def check_daily_calls(user: RespUser = Depends(auth_handler.auth_wrapper)):
+    this_user = Users.read({"user_email": user["user_email"]}, {"_id": 0})    
+    if int(this_user['daily_calls']) >= 1:
+        if this_user["api_key"]:
+            if handle_user_calls(this_user["api_key"]):
+                return JSONResponse(status_code=200, content={"Proceed": True})
+            else: 
+                return JSONResponse(status_code=500, content={"Message": "Semethong went wrong, call a system administrator"})
+        else:
+            return JSONResponse(status_code=403, content={"Message": "You need a api_key to proceed"})
+    else:
+        return JSONResponse(status_code=400, content={"Message": "You don't have enought calls, please try again later"})
+    

@@ -77,7 +77,7 @@ def test_read_user_fail():
     
     assert r.status_code == 403
 
-def test_update_user(token): #<- Error Github (TypeError expected string value)
+def test_update_user(token):
     payload = json.dumps({
         "field": "user_name",
         "value": "TestUser"

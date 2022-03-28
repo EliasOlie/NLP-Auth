@@ -21,7 +21,7 @@ else:
     ENV = config("ENV")
     JWT_SECRET = config("JWT_SECRET")
 
-router = APIRouter(
+auth_router = APIRouter(
     tags=['Security'],
     prefix='/security'
 )
